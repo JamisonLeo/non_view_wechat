@@ -10,7 +10,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 服务器，监听 9999 端口，保持通信
@@ -20,7 +21,8 @@ public class WeChatServer {
     /**
      * 存放合法用户的信息
      */
-    private static HashMap<String, User> validUsers = new HashMap<>();
+    public static ConcurrentHashMap<String, User> validUsers = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, ArrayList<Message>> offLineMessages = new ConcurrentHashMap<>();
     /**
      * 统一的时间格式
      */
@@ -74,6 +76,16 @@ public class WeChatServer {
                         // 将线程加入到管理集合中
                         ManageConnectionThreads.addServerConnectClientThread(
                                 user.getUserID(), serverConnectClientThread);
+                        
+                        // 将服务器保存的离线消息发送给用户
+                        if (offLineMessages.get(user.getUserID()) != null) {
+                            ObjectOutputStream objectOutputStream1 =
+                                    new ObjectOutputStream(serverConnectClientThread.getSocket().getOutputStream());
+                            for (Message offLineMessage : offLineMessages.get(user.getUserID())) {
+                                objectOutputStream1.writeObject(offLineMessage);
+                            }
+                            WeChatServer.offLineMessages.remove(user.getUserID());
+                        }
                         break;
                     // 已经在线，将验证信息发送给客户端，并关闭socket
                     case MessageType.MESSAGE_USER_ONLINE:

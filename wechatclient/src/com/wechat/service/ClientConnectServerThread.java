@@ -4,6 +4,7 @@ import com.wechat.common.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.net.Socket;
 
@@ -19,10 +20,15 @@ public class ClientConnectServerThread extends Thread {
     
     @Override
     public void run() {
+        ObjectInputStream objectInputStream = null;
+        try {
+            objectInputStream = new ObjectInputStream(socket.getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         // 因为需要在后台和服务器保持通信，所以使用无限循环
         while (true) {
             try {
-                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 // 等待读取服务器端发送的消息，服务器不发送消息则阻塞在这里
                 Message message = (Message) objectInputStream.readObject();
                 switch (message.getMessageType()) {

@@ -5,6 +5,7 @@ import com.wechat.common.*;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 /**
  * 服务器与客户端连接的线程类
@@ -48,19 +49,48 @@ public class ServerConnectClientThread extends Thread {
                     /*客户端之间私发消息、文件*/
                     case MessageType.MESSAGE_TO_PERSONAL_MESSAGE:
                     case MessageType.MESSAGE_TO_PERSONAL_FILE:
-                        ServerConnectClientThread receiverThread =
-                                ManageConnectionThreads.getServerConnectClientThread(message.getReceiver());
+                        ServerConnectClientThread serverConnectClientThread
+                                = ManageConnectionThreads.getServerConnectClientThread(message.getReceiver());
+                        
+                        // 如果用户不在线，将信息存放起来
+                        if (serverConnectClientThread == null) {
+                            ArrayList<Message> messages = WeChatServer.offLineMessages.get(message.getReceiver());
+                            if (messages != null) {
+                                messages.add(message);
+                            } else {
+                                ArrayList<Message> messages1 = new ArrayList<>();
+                                WeChatServer.offLineMessages.put(message.getReceiver(), messages1);
+                                messages1.add(message);
+                            }
+                            break;
+                        }
+                        
                         ObjectOutputStream objectOutputStream1 =
-                                new ObjectOutputStream(receiverThread.getSocket().getOutputStream());
+                                new ObjectOutputStream(serverConnectClientThread.getSocket().getOutputStream());
                         objectOutputStream1.writeObject(message);
                         break;
                     /*群发消息*/
                     case MessageType.MESSAGE_TO_EVERYONE_MESSAGE:
-                        for (ServerConnectClientThread thread : ManageConnectionThreads.getHashMap().values()) {
+                        for (String userID : WeChatServer.validUsers.keySet()) {
+                            ServerConnectClientThread thread = ManageConnectionThreads.getHashMap().get(userID);
+                            // 如果用户不在线，将信息存放起来
+                            if (thread == null) {
+                                ArrayList<Message> messages = WeChatServer.offLineMessages.get(userID);
+                                if (messages != null) {
+                                    messages.add(message);
+                                } else {
+                                    ArrayList<Message> messages1 = new ArrayList<>();
+                                    WeChatServer.offLineMessages.put(userID, messages1);
+                                    messages1.add(message);
+                                }
+                                continue;
+                            }
+                            
                             // 如果遍历到的线程是发送消息的线程则略过
                             if (thread.getUserID().equals(message.getSender())) {
                                 continue;
                             }
+                            
                             ObjectOutputStream objectOutputStream2 =
                                     new ObjectOutputStream(thread.getSocket().getOutputStream());
                             objectOutputStream2.writeObject(message);
