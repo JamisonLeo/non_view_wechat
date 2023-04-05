@@ -4,7 +4,6 @@ import com.wechat.common.MessageType;
 import com.wechat.common.User;
 import com.wechat.common.Message;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -26,10 +25,6 @@ public class UserService {
      * 调用此服务的User对象与服务器保持通信的socket
      */
     private static Socket socket;
-    /**
-     * 统一的时间格式
-     */
-    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     /**
      * 默认保存文件的位置
      */
@@ -99,7 +94,7 @@ public class UserService {
         Message message = new Message();
         message.setMessageType(MessageType.MESSAGE_GET_ONLINE_FRIEND);
         message.setSender(user.getUserID());
-        message.setSendTime(formatter.format(LocalDateTime.now()));
+        message.setSendTime(LocalDateTime.now());
         try {
             // 获取当前线程的socket对应的对象输出流
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -117,7 +112,7 @@ public class UserService {
         Message message = new Message();
         message.setMessageType(MessageType.MESSAGE_CLIENT_EXIT);
         message.setSender(user.getUserID());
-        message.setSendTime(formatter.format(LocalDateTime.now()));
+        message.setSendTime(LocalDateTime.now());
         try {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
             objectOutputStream.writeObject(message);

@@ -1,12 +1,18 @@
 package com.wechat.common;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * 客户端和服务器端通讯时的消息对象
  */
 public class Message implements Serializable {
     private static final long serialVersionUID = 1L;
+    /**
+     * 统一的时间格式
+     */
+    public static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     /**
      * 发送者
      */
@@ -96,8 +102,8 @@ public class Message implements Serializable {
      * 设置发送时间
      * @param sendTime 发送时间
      */
-    public void setSendTime(String sendTime) {
-        this.sendTime = sendTime;
+    public void setSendTime(LocalDateTime sendTime) {
+        this.sendTime = formatter.format(sendTime);
     }
     
     /**

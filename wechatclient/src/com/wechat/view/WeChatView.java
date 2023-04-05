@@ -67,7 +67,7 @@ public class WeChatView {
                                 case "2":
                                     System.out.print("发给所有人：");
                                     String s = Utility.readString(1000);
-                                    MessageService.sendMessageToEveryone(userID, s, UserService.formatter.format(LocalDateTime.now()));
+                                    MessageService.sendMessageToEveryone(userID, s,LocalDateTime.now());
                                     break;
                                 /*私聊信息*/
                                 case "3":
@@ -75,7 +75,7 @@ public class WeChatView {
                                     String receiver = Utility.readString(20);
                                     System.out.print("\n发给" + receiver + "：");
                                     String sendMessage = Utility.readString(1000);
-                                    MessageService.sendMessageToPersonal(receiver, userID, sendMessage, UserService.formatter.format(LocalDateTime.now()));
+                                    MessageService.sendMessageToPersonal(receiver, userID, sendMessage, LocalDateTime.now());
                                     break;
                                 /*发送文件*/
                                 case "4":
@@ -83,7 +83,7 @@ public class WeChatView {
                                     String receiver1 = Utility.readString(20);
                                     System.out.print("\n输入要发送的文件的路径：");
                                     String filePath = Utility.readString(1000);
-                                    FileService.sendFileToPersonal(receiver1, userID, filePath, UserService.formatter.format(LocalDateTime.now()));
+                                    FileService.sendFileToPersonal(receiver1, userID, filePath, LocalDateTime.now());
                                     System.out.println("发送文件");
                                     break;
                                 /*退出系统*/

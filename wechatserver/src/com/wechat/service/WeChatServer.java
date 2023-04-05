@@ -41,6 +41,7 @@ public class WeChatServer {
         try {
             System.out.println("等待客户端连接……");
             serverSocket = new ServerSocket(9999);
+            new Thread(new SendNewsToAllClients()).start();
             
             // 连接到一个用户后应该继续监听
             while (true) {

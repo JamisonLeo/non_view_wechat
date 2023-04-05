@@ -7,12 +7,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.time.LocalDateTime;
 
 /**
  * 文件相关的服务
  */
 public class FileService {
-    public static void sendFileToPersonal(String receiver, String sender, String fileURL, String sendTime) {
+    public static void sendFileToPersonal(String receiver, String sender, String fileURL, LocalDateTime sendTime) {
         String[] fileName = fileURL.split("\\\\");
         File file = new File(fileURL);
         byte[] bytes = new byte[(int) file.length()];
